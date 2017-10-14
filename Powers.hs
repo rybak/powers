@@ -20,7 +20,7 @@ replaceCell :: (Int, Int) -> Int -> World -> World
 replaceCell (i, j) x w = replaceElement w i newLine where
     newLine = replaceElement (w !! i) j x
 
-find :: (World -> (Int, Int) -> Bool) -> World -> [(Int, Int)] -> [(Int, Int)]
+find :: (World -> a -> Bool) -> World -> [a] -> [a]
 find p w = filter (p w)
 
 allCoords = [(0,0), (0,1), (0,2), (0,3),
