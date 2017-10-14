@@ -1,0 +1,6 @@
+script: make
+install:
+    echo "Nothing to install"
+language: haskell
+ghc:
+  - 8.0.1
