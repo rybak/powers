@@ -28,25 +28,25 @@ allCoords = [(0,0), (0,1), (0,2), (0,3),
              (2,0), (2,1), (2,2), (2,3),
              (3,0), (3,1), (3,2), (3,3)]
 
-verticalUp = filter (getFilter Up) allCoords
+movingUpCoords = filter (getMovingTilesFilter Up) allCoords
 
 isZeroTop w (i, j) = ((w !! (i-1) !! j) == 0) && ((w !! i !! j) /= 0)
 
 moveUp :: World -> World
 moveUp w = foldl swapZeroTops w zeroTopCoords where
-    zeroTopCoords = find isZeroTop w verticalUp
+    zeroTopCoords = find isZeroTop w movingUpCoords
     swapZeroTops :: World -> (Int, Int) -> World
     swapZeroTops w (i, j) = swapTwoCells w (i-1, j) (i, j)
 squashUp w = foldl squashEqual w equalCoords where
-    equalCoords = find isEqualUp w verticalUp
+    equalCoords = find isEqualUp w movingUpCoords
     squashEqual w (i, j) = replaceCell (i-1, j) (2 * (w !! (i-1) !! j)) $
                            replaceCell (  i, j)  0 w
 
 data Dir = Up | Down | Left | Right
 
-getFilter :: Dir -> ((Int, Int) -> Bool)
-getFilter Up = \(i, _) -> i /= 0
-getFilter _ = undefined
+getMovingTilesFilter :: Dir -> ((Int, Int) -> Bool)
+getMovingTilesFilter Up = \(i, _) -> i /= 0
+getMovingTilesFilter _ = undefined
 
 isEqualUp w (i, j) = (w !! (i-1) !! j) == (w !! i !! j)
 
