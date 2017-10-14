@@ -30,7 +30,11 @@ allCoords = [(0,0), (0,1), (0,2), (0,3),
 
 movingUpCoords = filter (getMovingTilesFilter Up) allCoords
 
-isZeroTop w (i, j) = ((w !! (i-1) !! j) == 0) && ((w !! i !! j) /= 0)
+at :: World -> (Int, Int) -> Int
+at w (i, j) = w !! i !! j
+
+isZeroTop w coords@(i, j) = w `at` (i-1, j) == 0 && w `at` coords /= 0
+isEqualUp w coords@(i, j) = w `at` (i-1, j) == w `at` coords
 
 moveUp :: World -> World
 moveUp w = foldl swapZeroTops w zeroTopCoords where
@@ -47,8 +51,6 @@ data Dir = Up | Down | Left | Right
 getMovingTilesFilter :: Dir -> ((Int, Int) -> Bool)
 getMovingTilesFilter Up = \(i, _) -> i /= 0
 getMovingTilesFilter _ = undefined
-
-isEqualUp w (i, j) = (w !! (i-1) !! j) == (w !! i !! j)
 
 up :: World -> World
 up = squashUp . moveUp
