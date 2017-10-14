@@ -12,10 +12,13 @@ import Data.Maybe (catMaybes)
 
 import Powers
 
+showCell :: Int -> String
+showCell 0 = "     "
+showCell n = printf "%5d" n
 
 showLine :: [Int] -> String
-showLine [a,b,c,d] = printf "|%5d%5d%5d%5d |" a b c d
-showLine _ = undefined
+showLine line = "|" ++ (concat $ map showCell line) ++ " |"
+
 boardTop = "+---------------------+" -- just ASCII for now
 boardBottom = boardTop
 

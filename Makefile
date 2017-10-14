@@ -12,5 +12,8 @@ test : Test.hs Powers.hs
 main : Main.hs Powers.hs
 	$(HC) --make $^ -o $@
 
+run : main
+	./main
+
 clear :
 	$(RM) test main *.hi Main.o Test.o Powers.o

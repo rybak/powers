@@ -2,10 +2,6 @@ module Powers where
 
 type World = [[Int]]
 
-showCell :: Int -> String
-showCell 0 = ""
-showCell n = show n
-
 replaceElement :: [a] -> Int -> a -> [a]
 replaceElement xs i x = prefix ++ (x : postfix) where
     prefix = take i xs
