@@ -45,8 +45,9 @@ moveUp w = foldl swapZeroTops w zeroTopCoords where
     swapZeroTops w coords = swapTwoCells w coords (getTowardsCoords Up coords)
 squashUp w = foldl squashEqual w equalCoords where
     equalCoords = find isEqualUp w movingUpCoords
-    squashEqual w (i, j) = replaceCell (i-1, j) (2 * (w !! (i-1) !! j)) $
-                           replaceCell (  i, j)  0 w
+    squashEqual w coords = replaceCell stationary (2 * w `at` stationary) $
+                           replaceCell coords 0 w where
+        stationary = getTowardsCoords Up coords
 
 data Dir = Up | Down | Left | Right
 
