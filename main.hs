@@ -43,23 +43,26 @@ replaceCell (i, j) x w = replaceElement w i newLine where
 find :: (World -> (Int, Int) -> Bool) -> World -> [(Int, Int)] -> [(Int, Int)]
 find p w = filter (p w)
 
-verticalUp = [(0,0), (0,1), (0,2), (0,3),
-              (1,0), (1,1), (1,2), (1,3),
-              (2,0), (2,1), (2,2), (2,3)]
+allCoords = [(0,0), (0,1), (0,2), (0,3),
+             (1,0), (1,1), (1,2), (1,3),
+             (2,0), (2,1), (2,2), (2,3),
+             (3,0), (3,1), (3,2), (3,3)]
 
-isZeroTop w (i, j) = ((w !! i !! j) == 0) && ((w !! (i+1) !! j) /= 0)
+verticalUp = filter (\(i,_) -> i /= 0) allCoords
+
+isZeroTop w (i, j) = ((w !! (i-1) !! j) == 0) && ((w !! i !! j) /= 0)
 
 moveUp :: World -> World
 moveUp w = foldl swapZeroTops w zeroTopCoords where
     zeroTopCoords = find isZeroTop w verticalUp
     swapZeroTops :: World -> (Int, Int) -> World
-    swapZeroTops w (i, j) = swapTwoCells w (i, j) (i+1, j)
+    swapZeroTops w (i, j) = swapTwoCells w (i-1, j) (i, j)
 squashUp w = foldl squashEqual w equalCoords where
     equalCoords = find isEqualUp w verticalUp
-    squashEqual w (i, j) = replaceCell (    i, j) (2 * (w !! i !! j)) $
-                           replaceCell (i + 1, j)  0 w
+    squashEqual w (i, j) = replaceCell (i-1, j) (2 * (w !! (i-1) !! j)) $
+                           replaceCell (  i, j)  0 w
 
-isEqualUp w (i, j) = (w !! i !! j) == (w !! (i+1) !! j)
+isEqualUp w (i, j) = (w !! (i-1) !! j) == (w !! i !! j)
 
 up :: World -> World
 up = squashUp . moveUp
@@ -84,10 +87,10 @@ readAll h ch = do
         then hGetChar h >>= readAll h
         else return ch
 
-initial = [[  0, 0, 0, 32],
-           [  0, 0, 2,  0], 
-           [  0, 4, 2, 32],
-           [ 16, 8, 0,  0]]
+initial = [[   2, 0, 0, 32],
+           [ 128, 0, 2,  0], 
+           [   0, 4, 2, 32],
+           [  16, 8, 0,  0]]
 
 main = do
     hSetBuffering stdin NoBuffering --get input immedietly
