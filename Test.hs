@@ -16,7 +16,22 @@ simpleUpTest = testUp
     [[2,0,0,0], [2,0,0,0], emptyRow, emptyRow]
     [[4,0,0,0],  emptyRow, emptyRow, emptyRow]
 
-tests = [simpleTest, simpleUpTest]
+upFilled = testUp [[   2, 0, 0, 32],
+                   [ 128, 0, 2,  0],
+                   [   0, 4, 2, 32],
+                   [  16, 8, 0,  0]]
+
+                  [[   2, 4, 4, 64],
+                   [ 128, 8, 0,  0],
+                   [  16, 0, 0,  0],
+                   [   0, 0, 0,  0]]
+
+
+tests = [
+    simpleTest,
+    simpleUpTest,
+    upFilled
+    ]
 
 fromTestResult :: Bool -> String
 fromTestResult True = "Ok"
