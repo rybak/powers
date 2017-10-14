@@ -33,16 +33,16 @@ movingUpCoords = filter (getMovingTilesFilter Up) allCoords
 at :: World -> (Int, Int) -> Int
 at w (i, j) = w !! i !! j
 
-isZeroPair w a b = w `at` a == 0 && w `at` b /= 0
-isZeroTop w coords = isZeroPair w (getTowardsCoords Up coords) coords
+isZeroPair w a b = w `at` a /= 0 && w `at` b == 0
+isZeroTop w coords = isZeroPair w coords (getTowardsCoords Up coords)
 isEqualPair w a b = w `at` a == w `at` b
-isEqualUp w coords = isEqualPair w (getTowardsCoords Up coords) coords
+isEqualUp w coords = isEqualPair w coords (getTowardsCoords Up coords)
 
 moveUp :: World -> World
 moveUp w = foldl swapZeroTops w zeroTopCoords where
     zeroTopCoords = find isZeroTop w movingUpCoords
     swapZeroTops :: World -> (Int, Int) -> World
-    swapZeroTops w coords = swapTwoCells w (getTowardsCoords Up coords) coords
+    swapZeroTops w coords = swapTwoCells w coords (getTowardsCoords Up coords)
 squashUp w = foldl squashEqual w equalCoords where
     equalCoords = find isEqualUp w movingUpCoords
     squashEqual w (i, j) = replaceCell (i-1, j) (2 * (w !! (i-1) !! j)) $
