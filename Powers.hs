@@ -1,5 +1,7 @@
 module Powers where
 
+import Prelude hiding (Left, Right)
+
 type World = [[Int]]
 
 createPair :: (a -> a) -> a -> (a, a)
@@ -56,20 +58,29 @@ squash dir w = foldl squash w equalPairs where
 data Dir = Up | Down | Left | Right
 
 getMovingTilesFilter :: Dir -> ((Int, Int) -> Bool)
-getMovingTilesFilter Up = \(i, _) -> i /= 0
-getMovingTilesFilter _ = undefined
+getMovingTilesFilter Up    = \(i, _) -> i /= 0
+getMovingTilesFilter Down  = \(i, _) -> i /= 3
+getMovingTilesFilter Left  = \(_, j) -> j /= 0
+getMovingTilesFilter Right = \(_, j) -> j /= 3
 
 -- get the coordinates of tile towards which (i, j) tile will be moving in
 -- specified direction
 getTowardsCoords :: Dir -> (Int, Int) -> (Int, Int)
-getTowardsCoords Up (i, j) = (i-1, j)
-getTowardsCoords _ _ = undefined
+getTowardsCoords Up    (i, j) = (i-1, j)
+getTowardsCoords Down  (i, j) = (i+1, j)
+getTowardsCoords Left  (i, j) = (i, j-1)
+getTowardsCoords Right (i, j) = (i, j+1)
 
-up :: World -> World
-up = (squash Up) . (move Up)
+charToDir :: Char -> Maybe Dir
+charToDir 'w' = Just Up
+charToDir 'a' = Just Left
+charToDir 's' = Just Down
+charToDir 'd' = Just Right
+charToDir _   = Nothing
 
 update :: Char -> World -> World
-update 'w' = up . up . up . up . up
--- todo for "asd" keys
-update _ = id
+update c = case charToDir c of
+    Just dir -> step . step . step . step . step where
+        step = (squash dir) . (move dir)
+    Nothing  -> id
 
