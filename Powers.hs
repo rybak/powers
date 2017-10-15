@@ -39,16 +39,16 @@ isZeroPair w a b = w `at` a /= 0 && w `at` b == 0
 isEqualPair :: World -> (Int, Int) -> (Int, Int) -> Bool
 isEqualPair w a b = w `at` a == w `at` b
 
-moveUp :: World -> World
-moveUp w = foldl swap w zeroTopPairs where
+move :: Dir -> World -> World
+move dir w = foldl swap w zeroTopPairs where
     zeroTopPairs :: [((Int, Int), (Int, Int))]
-    zeroTopPairs = find (uncurry . isZeroPair) w $ movingPairs Up
+    zeroTopPairs = find (uncurry . isZeroPair) w $ movingPairs dir
     swap :: World -> ((Int, Int), (Int, Int)) -> World
     swap w (a,b) = replaceCell a y $ replaceCell b x w where
         x = w `at` a
         y = w `at` b
-squashUp w = foldl squash w equalPairs where
-    equalPairs = find (uncurry . isEqualPair) w $ movingPairs Up
+squash dir w = foldl squash w equalPairs where
+    equalPairs = find (uncurry . isEqualPair) w $ movingPairs dir
     squash :: World -> ((Int, Int), (Int, Int)) -> World
     squash w (a,b) = replaceCell a 0 $ replaceCell b sum w where
         sum = w `at` a + w `at` b
@@ -66,7 +66,7 @@ getTowardsCoords Up (i, j) = (i-1, j)
 getTowardsCoords _ _ = undefined
 
 up :: World -> World
-up = squashUp . moveUp
+up = (squash Up) . (move Up)
 
 update :: Char -> World -> World
 update 'w' = up . up . up . up . up
