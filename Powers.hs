@@ -2,6 +2,9 @@ module Powers where
 
 type World = [[Int]]
 
+createPair :: (a -> a) -> a -> (a, a)
+createPair f a = (a, f a)
+
 replaceElement :: [a] -> Int -> a -> [a]
 replaceElement xs i x = prefix ++ (x : postfix) where
     prefix = take i xs
@@ -26,24 +29,32 @@ allCoords = [(0,0), (0,1), (0,2), (0,3),
 
 movingUpCoords = filter (getMovingTilesFilter Up) allCoords
 
+movingPairs :: Dir -> [((Int, Int), (Int, Int))]
+movingPairs dir = filter (\(a, b) -> isValid a && isValid b) $
+    map (createPair (getTowardsCoords dir)) allCoords
+isValid :: (Int, Int) -> Bool
+isValid (i,j) = valid i && valid j where
+    valid z = 0 <= z && z <= 3
+
 at :: World -> (Int, Int) -> Int
 at w (i, j) = w !! i !! j
 
+isZeroPair :: World -> (Int, Int) -> (Int, Int) -> Bool
 isZeroPair w a b = w `at` a /= 0 && w `at` b == 0
-isZeroTop w coords = isZeroPair w coords (getTowardsCoords Up coords)
+isEqualPair :: World -> (Int, Int) -> (Int, Int) -> Bool
 isEqualPair w a b = w `at` a == w `at` b
-isEqualUp w coords = isEqualPair w coords (getTowardsCoords Up coords)
 
 moveUp :: World -> World
-moveUp w = foldl swapZeroTops w zeroTopCoords where
-    zeroTopCoords = find isZeroTop w movingUpCoords
-    swapZeroTops :: World -> (Int, Int) -> World
-    swapZeroTops w coords = swapTwoCells w coords (getTowardsCoords Up coords)
-squashUp w = foldl squashEqual w equalCoords where
-    equalCoords = find isEqualUp w movingUpCoords
-    squashEqual w coords = replaceCell stationary (2 * w `at` stationary) $
-                           replaceCell coords 0 w where
-        stationary = getTowardsCoords Up coords
+moveUp w = foldl swap w zeroTopPairs where
+    zeroTopPairs :: [((Int, Int), (Int, Int))]
+    zeroTopPairs = find (uncurry . isZeroPair) w $ movingPairs Up
+    swap :: World -> ((Int, Int), (Int, Int)) -> World
+    swap w (a,b) = swapTwoCells w a b
+squashUp w = foldl squash w equalPairs where
+    equalPairs = find (uncurry . isEqualPair) w $ movingPairs Up
+    squash :: World -> ((Int, Int), (Int, Int)) -> World
+    squash w (a,b) = replaceCell a 0 $ replaceCell b sum w where
+        sum = w `at` a + w `at` b
 
 data Dir = Up | Down | Left | Right
 
