@@ -10,11 +10,6 @@ replaceElement xs i x = prefix ++ (x : postfix) where
     prefix = take i xs
     postfix = drop (i + 1) xs
 
-swapTwoCells :: World -> (Int, Int) -> (Int, Int) -> World
-swapTwoCells w (i1, j1) (i2, j2) = replaceElement (replaceElement w i1 newLine1) i2 newLine2 where
-    newLine1 = replaceElement (w !! i1) j1 (w !! i2 !! j2)
-    newLine2 = replaceElement (w !! i2) j2 (w !! i1 !! j1)
-
 replaceCell :: (Int, Int) -> Int -> World -> World
 replaceCell (i, j) x w = replaceElement w i newLine where
     newLine = replaceElement (w !! i) j x
@@ -49,7 +44,9 @@ moveUp w = foldl swap w zeroTopPairs where
     zeroTopPairs :: [((Int, Int), (Int, Int))]
     zeroTopPairs = find (uncurry . isZeroPair) w $ movingPairs Up
     swap :: World -> ((Int, Int), (Int, Int)) -> World
-    swap w (a,b) = swapTwoCells w a b
+    swap w (a,b) = replaceCell a y $ replaceCell b x w where
+        x = w `at` a
+        y = w `at` b
 squashUp w = foldl squash w equalPairs where
     equalPairs = find (uncurry . isEqualPair) w $ movingPairs Up
     squash :: World -> ((Int, Int), (Int, Int)) -> World
