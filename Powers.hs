@@ -72,8 +72,8 @@ getTowardsCoords Left  (i, j) = (i, j-1)
 getTowardsCoords Right (i, j) = (i, j+1)
 
 step :: Dir -> World -> World
-step dir = one . one . one . one . one where
-    one = (squash dir) . (move dir)
+step dir = m . m . m . m . (squash dir) . m . m . m . m where
+    m = move dir
 
 addNew :: RandomGen g => g -> World -> (g, World)
 addNew = (,)
