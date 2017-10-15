@@ -10,6 +10,7 @@ import Data.List (intercalate)
 import Control.Monad (join, when)
 import Data.Function (fix)
 import Data.Maybe (catMaybes)
+import System.Random
 
 import Powers
 
@@ -34,15 +35,17 @@ charToDir 's' = Just Down
 charToDir 'd' = Just Right
 charToDir _   = Nothing
 
-gameLoop :: Handle -> World -> IO ()
-gameLoop i w = go True i w where
-    go needRender input world = do
+gameLoop :: RandomGen g => Handle -> g -> World -> IO ()
+gameLoop i g w = do
+    go g True i w where
+    go g needRender input world = do
         when needRender $ renderWorld world
         e <- threadDelay 2000
         ch <- readAll input ' '
         when (ch /= 'q') $ case charToDir ch of
-            Just dir -> go True  input $ update dir world
-            Nothing  -> go False input world
+            Just dir -> go nextG True  input newWorld where
+                (nextG, newWorld) = update g dir world
+            Nothing  -> go g     False input world
 
 readAll :: Handle -> Char -> IO (Char)
 readAll h ch = do
@@ -60,4 +63,5 @@ main = do
     hSetBuffering stdin NoBuffering --get input immediately
     hSetBuffering stdout NoBuffering
     hSetEcho stdin False --don't show the typed character
-    gameLoop stdin initial
+    g <- getStdGen
+    gameLoop stdin g initial

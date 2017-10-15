@@ -1,6 +1,7 @@
 module Powers where
 
 import Prelude hiding (Left, Right)
+import System.Random
 
 type World = [[Int]]
 type Coords = (Int, Int)
@@ -74,5 +75,8 @@ step :: Dir -> World -> World
 step dir = one . one . one . one . one where
     one = (squash dir) . (move dir)
 
-update :: Dir -> World -> World
-update = step
+addNew :: RandomGen g => g -> World -> (g, World)
+addNew = (,)
+
+update :: RandomGen g => g -> Dir -> World -> (g, World)
+update g d = addNew g . step d

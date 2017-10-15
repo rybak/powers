@@ -4,3 +4,6 @@ install:
 language: haskell
 ghc:
   - 8.0.1
+before_install:
+  - cabal update
+  - cabal install random
