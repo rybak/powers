@@ -71,16 +71,9 @@ getTowardsCoords Down  (i, j) = (i+1, j)
 getTowardsCoords Left  (i, j) = (i, j-1)
 getTowardsCoords Right (i, j) = (i, j+1)
 
-charToDir :: Char -> Maybe Dir
-charToDir 'w' = Just Up
-charToDir 'a' = Just Left
-charToDir 's' = Just Down
-charToDir 'd' = Just Right
-charToDir _   = Nothing
+step :: Dir -> World -> World
+step dir = one . one . one . one . one where
+    one = (squash dir) . (move dir)
 
-update :: Char -> World -> World
-update c = case charToDir c of
-    Just dir -> step . step . step . step . step where
-        step = (squash dir) . (move dir)
-    Nothing  -> id
-
+update :: Dir -> World -> World
+update = step

@@ -7,14 +7,20 @@ import Powers
 emptyRow = [0,0,0,0]
 simpleWorld = [[ 2, 4, 0, 0], emptyRow, emptyRow, emptyRow]
 
-testUpdate ch world expected = update ch world == expected
+testStep ch world expected = step ch world == expected
 
-testUp = testUpdate 'w'
+testUp = testStep Up
+testDown = testStep Down
 
 simpleTest = testUp simpleWorld simpleWorld
 simpleUpTest = testUp
     [[2,0,0,0], [2,0,0,0], emptyRow, emptyRow]
     [[4,0,0,0],  emptyRow, emptyRow, emptyRow]
+
+simpleTest2 = testDown simpleWorld (reverse simpleWorld)
+simpleDownTest = testDown
+    [[2,0,0,0], [2,0,0,0], emptyRow,  emptyRow]
+    [ emptyRow,  emptyRow, emptyRow, [4,0,0,0]]
 
 upFilled = testUp [[   2, 0, 0, 32],
                    [ 128, 0, 2,  0],
@@ -26,11 +32,24 @@ upFilled = testUp [[   2, 0, 0, 32],
                    [  16, 0, 0,  0],
                    [   0, 0, 0,  0]]
 
+downFilled = testDown [[ 2, 0,  0, 2],
+                       [ 4, 0,  8, 0],
+                       [ 8, 4,  8, 2],
+                       [ 0, 8,  0, 0]]
+
+                      [[ 0, 0,  0, 0],
+                       [ 2, 0,  0, 0],
+                       [ 4, 4,  0, 0],
+                       [ 8, 8, 16, 4]]
+
 
 tests = [
     simpleTest,
     simpleUpTest,
-    upFilled
+    upFilled,
+    simpleTest2,
+    simpleDownTest,
+    downFilled
     ]
 
 fromTestResult :: Bool -> String

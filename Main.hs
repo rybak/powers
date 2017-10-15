@@ -1,5 +1,6 @@
 module Main where
 
+import Prelude hiding (Left, Right)
 import System.IO
 import Data.Char (chr)
 import Control.Concurrent (threadDelay)
@@ -26,7 +27,12 @@ renderWorld :: World -> IO ()
 renderWorld world = do
     putStrLn $ intercalate "\n" $ boardTop : (map showLine world) ++ [boardBottom]
 
-goodInput = "wasd"
+charToDir :: Char -> Maybe Dir
+charToDir 'w' = Just Up
+charToDir 'a' = Just Left
+charToDir 's' = Just Down
+charToDir 'd' = Just Right
+charToDir _   = Nothing
 
 gameLoop :: Handle -> World -> IO ()
 gameLoop i w = go True i w where
@@ -34,7 +40,9 @@ gameLoop i w = go True i w where
         when needRender $ renderWorld world
         e <- threadDelay 2000
         ch <- readAll input ' '
-        when (ch /= 'q') $ go (ch `elem` goodInput) input $ update ch world
+        when (ch /= 'q') $ case charToDir ch of
+            Just dir -> go True  input $ update dir world
+            Nothing  -> go False input world
 
 readAll :: Handle -> Char -> IO (Char)
 readAll h ch = do
