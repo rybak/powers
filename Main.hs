@@ -57,7 +57,7 @@ initial = [[   2, 0, 0, 32],
            [  16, 8, 0,  0]]
 
 main = do
-    hSetBuffering stdin NoBuffering --get input immedietly
+    hSetBuffering stdin NoBuffering --get input immediately
     hSetBuffering stdout NoBuffering
     hSetEcho stdin False --don't show the typed character
     gameLoop stdin initial
