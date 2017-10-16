@@ -44,15 +44,15 @@ isValid (i,j) = valid i && valid j where
 at :: World -> Coords -> Int
 at w (i, j) = w !! i !! j
 
-isZeroPair :: World -> Coords -> Coords -> Bool
-isZeroPair w a b = w `at` a /= 0 && w `at` b == 0
+isSecondZeroPair :: World -> Coords -> Coords -> Bool
+isSecondZeroPair w a b = w `at` a /= 0 && w `at` b == 0
 isEqualPair :: World -> Coords -> Coords -> Bool
 isEqualPair w a b = w `at` a == w `at` b
 
 move :: Dir -> World -> World
-move dir w = foldl swap w zeroTopPairs where
-    zeroTopPairs :: [(Coords, Coords)]
-    zeroTopPairs = find (uncurry . isZeroPair) w $ movingPairs dir
+move dir w = foldl swap w movablePairs where
+    movablePairs :: [(Coords, Coords)]
+    movablePairs = find (uncurry . isSecondZeroPair) w $ movingPairs dir
     swap :: World -> (Coords, Coords) -> World
     swap w (a,b) = replaceCell a y $ replaceCell b x w where
         x = w `at` a
