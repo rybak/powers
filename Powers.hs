@@ -1,6 +1,8 @@
 module Powers where
 
 import Prelude hiding (Left, Right)
+import Data.List (sortBy)
+import Data.Ord (comparing)
 import System.Random
 
 type World = [[Int]]
@@ -26,8 +28,14 @@ allCoords = [(0,0), (0,1), (0,2), (0,3),
              (2,0), (2,1), (2,2), (2,3),
              (3,0), (3,1), (3,2), (3,3)]
 
+cmp :: Dir -> ((Coords, Coords) -> (Coords, Coords) -> Ordering)
+cmp Up    = comparing (\((i,j), _) -> i)
+cmp Down  = comparing (\((i,j), _) -> -i)
+cmp Left  = comparing (\((i,j), _) -> j)
+cmp Right = comparing (\((i,j), _) -> -j)
+
 movingPairs :: Dir -> [(Coords, Coords)]
-movingPairs dir = filter (\(a, b) -> isValid a && isValid b) $
+movingPairs dir = sortBy (cmp dir) $ filter (\(a, b) -> isValid a && isValid b) $
     map (createPair (getTowardsCoords dir)) allCoords
 isValid :: Coords -> Bool
 isValid (i,j) = valid i && valid j where
@@ -49,11 +57,14 @@ move dir w = foldl swap w zeroTopPairs where
     swap w (a,b) = replaceCell a y $ replaceCell b x w where
         x = w `at` a
         y = w `at` b
-squash dir w = foldl squash w equalPairs where
-    equalPairs = find (uncurry . isEqualPair) w $ movingPairs dir
+squash dir world = foldl squash world equalPairs where
+    equalPairs = find (uncurry . isEqualPair) world $ movingPairs dir
     squash :: World -> (Coords, Coords) -> World
-    squash w (a,b) = replaceCell a 0 $ replaceCell b sum w where
-        sum = w `at` a + w `at` b
+    squash w (a,b) = if x == y
+        then replaceCell a 0 $ replaceCell b (x+y) w
+        else w where
+            x = w `at` a
+            y = w `at` b
 
 data Dir = Up | Down | Left | Right
 

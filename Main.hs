@@ -54,10 +54,10 @@ readAll h ch = do
         then hGetChar h >>= readAll h
         else return ch
 
-initial = [[   2, 0, 0, 32],
-           [ 128, 0, 2,  0],
-           [   0, 4, 2, 32],
-           [  16, 8, 0,  0]]
+initial  = [[ 0, 2, 0, 0],
+            [ 2, 0, 0, 0],
+            [ 0, 0, 0, 0],
+            [ 0, 0, 0, 0]]
 
 main = do
     hSetBuffering stdin NoBuffering --get input immediately

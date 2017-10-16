@@ -1,6 +1,7 @@
 module Main where
 
 import System.Exit
+import Prelude hiding (Left, Right)
 
 import Powers
 
@@ -42,6 +43,44 @@ downFilled = testDown [[ 2, 0,  0, 2],
                        [ 4, 4,  0, 0],
                        [ 8, 8, 16, 4]]
 
+upThree = testUp
+    [[2,0,0,0],
+     [0,0,0,0],
+     [2,0,0,0],
+     [2,0,0,0]]
+
+    [[4,0,0,0],
+     [2,0,0,0],
+     emptyRow,
+     emptyRow]
+
+squashTest = (squash Up
+    [[2,0,0,0],
+     [0,0,0,0],
+     [2,0,0,0],
+     [2,0,0,0]]) ==
+
+    [[2,0,0,0],
+     [0,0,0,0],
+     [4,0,0,0],
+     [0,0,0,0]]
+
+downThree = testDown
+    [[2,0,0,0],
+     [2,0,0,0],
+     [0,0,0,0],
+     [2,0,0,0]]
+
+    [emptyRow,
+     emptyRow,
+     [2,0,0,0],
+     [4,0,0,0]]
+
+isValidTest = and $ map isValid allCoords
+notValidTest = and $ map (not . isValid)
+    [(-1,0), (-1,-1), (4,0), (4,4), (4,-1), (-1,3)]
+
+getTowardsCoordsTest = (getTowardsCoords Down (1,1)) == (2,1)
 
 tests = [
     simpleTest,
@@ -49,7 +88,13 @@ tests = [
     upFilled,
     simpleTest2,
     simpleDownTest,
-    downFilled
+    downFilled,
+    upThree,
+    squashTest,
+    downThree,
+    isValidTest,
+    notValidTest,
+    getTowardsCoordsTest
     ]
 
 fromTestResult :: Bool -> String
