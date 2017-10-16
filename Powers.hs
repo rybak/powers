@@ -87,9 +87,10 @@ step dir = m . m . m . m . (squash dir) . m . m . m . m where
     m = move dir
 
 addNew :: RandomGen g => g -> World -> (g, World)
-addNew g w = (ng, replaceCell (zeros !! index) 2 w) where
+addNew g w = (ng, replaceCell (zeros !! index) newTile w) where
     zeros = filter (\coords -> w `at` coords == 0) allCoords
     (index, ng) = randomR (0, (length zeros) - 1) g
+    newTile = [2,4] !! (index `mod` 2)
 
 update :: RandomGen g => g -> Dir -> World -> (g, World)
 update g d w = if w == nw then (g, w) else addNew g nw where
