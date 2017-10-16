@@ -92,4 +92,5 @@ addNew g w = (ng, replaceCell (zeros !! index) 2 w) where
     (index, ng) = randomR (0, (length zeros) - 1) g
 
 update :: RandomGen g => g -> Dir -> World -> (g, World)
-update g d = addNew g . step d
+update g d w = if w == nw then (g, w) else addNew g nw where
+    nw = step d w
