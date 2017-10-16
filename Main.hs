@@ -36,16 +36,25 @@ charToDir 'd' = Just Right
 charToDir _   = Nothing
 
 gameLoop :: RandomGen g => Handle -> g -> World -> IO ()
-gameLoop i g w = do
-    go g True i w where
+gameLoop i g w = go g True i w where
     go g needRender input world = do
         when needRender $ renderWorld world
-        e <- threadDelay 2000
-        ch <- readAll input ' '
-        when (ch /= 'q') $ case charToDir ch of
-            Just dir -> go nextG True  input newWorld where
-                (nextG, newWorld) = update g dir world
-            Nothing  -> go g     False input world
+        if gameOver world
+        then putStrLn "Game over!"
+        else do
+            e <- threadDelay 2000
+            ch <- readAll input ' '
+            when (ch /= 'q') $ case charToDir ch of
+                Just dir -> go nextG True  input newWorld where
+                    (nextG, newWorld) = update g dir world
+                Nothing  -> go g     False input world
+
+gameOver :: World -> Bool
+gameOver world = a == b && b == c && c == d where
+    a = step Up world
+    b = step Down world
+    c = step Left world
+    d = step Right world
 
 readAll :: Handle -> Char -> IO (Char)
 readAll h ch = do
