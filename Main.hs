@@ -15,28 +15,30 @@ import System.Environment (getArgs)
 
 import Powers
 
-showCell :: Int -> String
-showCell 0 = "     "
-showCell n = printf "%5d" n
-
-showLine :: [Int] -> String
-showLine line = "|" ++ (concat $ map showCell line) ++ " |"
-
 type Render = World -> IO ()
 renderAsciiLines :: String -> String -> ([Int] -> String) -> String -> Render
-renderAsciiLines t b renderLine sep world = putStrLn $ intercalate sep $ t : (map renderLine world) ++ [b]
+renderAsciiLines top bottom renderLine sep world = do
+    putStrLn top
+    putStrLn $ intercalate sep $ map renderLine world
+    putStrLn bottom
+    putStrLn ""
 
 renderAsciiSimple :: Render
-renderAsciiSimple = renderAsciiLines boardTop boardTop showLine "\n" where
-    boardTop = "+---------------------+"
-
+renderAsciiSimple = renderAsciiLines simpleLine simpleLine showLine "\n" where
+    simpleLine = "+---------------------+"
+    showCell :: Int -> String
+    showCell 0 = "     "
+    showCell n = printf "%5d" n
+    showLine :: [Int] -> String
+    showLine line = "|" ++ (concat $ map showCell line) ++ " |"
 
 renderAsciiGrid :: Render
-renderAsciiGrid = renderAsciiLines "" "" showLineGrid sep where
-    sep = "\n+-------+-------+-------+-------+\n"
-showLineGrid line = '|' : (concat $ map showCellGrid line) where
-    showCellGrid 0 = "       |"
-    showCellGrid n = printf "%6d |" n
+renderAsciiGrid = renderAsciiLines gridLine gridLine showLineGrid sep where
+    gridLine = "+-------+-------+-------+-------+"
+    sep = "\n" ++ gridLine ++ "\n"
+    showLineGrid line = '|' : (concat $ map showCellGrid line) where
+        showCellGrid 0 = "       |"
+        showCellGrid n = printf "%6d |" n
 
 charToDir :: Char -> Maybe Dir
 charToDir 'w' = Just Up
