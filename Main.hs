@@ -11,6 +11,7 @@ import Control.Monad (join, when)
 import Data.Function (fix)
 import Data.Maybe (catMaybes)
 import System.Random
+import System.Environment (getArgs)
 
 import Powers
 
@@ -21,13 +22,21 @@ showCell n = printf "%5d" n
 showLine :: [Int] -> String
 showLine line = "|" ++ (concat $ map showCell line) ++ " |"
 
-boardTop = "+---------------------+" -- just ASCII for now
-boardBottom = boardTop
-
 type Render = World -> IO ()
-renderAscii :: Render
-renderAscii world = do
-    putStrLn $ intercalate "\n" $ boardTop : (map showLine world) ++ [boardBottom]
+renderAsciiLines :: String -> String -> ([Int] -> String) -> String -> Render
+renderAsciiLines t b renderLine sep world = putStrLn $ intercalate sep $ t : (map renderLine world) ++ [b]
+
+renderAsciiSimple :: Render
+renderAsciiSimple = renderAsciiLines boardTop boardTop showLine "\n" where
+    boardTop = "+---------------------+"
+
+
+renderAsciiGrid :: Render
+renderAsciiGrid = renderAsciiLines "" "" showLineGrid sep where
+    sep = "\n+-------+-------+-------+-------+\n"
+showLineGrid line = '|' : (concat $ map showCellGrid line) where
+    showCellGrid 0 = "       |"
+    showCellGrid n = printf "%6d |" n
 
 charToDir :: Char -> Maybe Dir
 charToDir 'w' = Just Up
@@ -70,8 +79,10 @@ initial  = [[ 0, 2, 0, 0],
             [ 0, 0, 0, 0]]
 
 main = do
+    args <- getArgs
     hSetBuffering stdin NoBuffering --get input immediately
     hSetBuffering stdout NoBuffering
     hSetEcho stdin False --don't show the typed character
     g <- getStdGen
-    gameLoop stdin g initial renderAscii
+    let r = if null args then renderAsciiSimple else renderAsciiGrid
+    gameLoop stdin g initial r
