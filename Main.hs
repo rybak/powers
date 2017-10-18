@@ -24,8 +24,9 @@ showLine line = "|" ++ (concat $ map showCell line) ++ " |"
 boardTop = "+---------------------+" -- just ASCII for now
 boardBottom = boardTop
 
-renderWorld :: World -> IO ()
-renderWorld world = do
+type Render = World -> IO ()
+renderAscii :: Render
+renderAscii world = do
     putStrLn $ intercalate "\n" $ boardTop : (map showLine world) ++ [boardBottom]
 
 charToDir :: Char -> Maybe Dir
@@ -35,10 +36,10 @@ charToDir 's' = Just Down
 charToDir 'd' = Just Right
 charToDir _   = Nothing
 
-gameLoop :: RandomGen g => Handle -> g -> World -> IO ()
-gameLoop i g w = go g True i w where
+gameLoop :: RandomGen g => Handle -> g -> World -> Render -> IO ()
+gameLoop i g w render = go g True i w where
     go g needRender input world = do
-        when needRender $ renderWorld world
+        when needRender $ render world
         if gameOver world
         then putStrLn "Game over!"
         else do
@@ -73,4 +74,4 @@ main = do
     hSetBuffering stdout NoBuffering
     hSetEcho stdin False --don't show the typed character
     g <- getStdGen
-    gameLoop stdin g initial
+    gameLoop stdin g initial renderAscii
