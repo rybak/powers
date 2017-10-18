@@ -1,7 +1,7 @@
 HC=ghc -O3
 RM=rm -f
 
-all : runTests
+all : runTests main
 
 runTests : test
 	./test
