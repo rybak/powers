@@ -47,6 +47,11 @@ charToDir 's' = Just Down
 charToDir 'd' = Just Right
 charToDir _   = Nothing
 
+printHelp :: IO ()
+printHelp = do
+    putStrLn "Use WASD keys to move the tiles."
+    putStrLn "Press Q to quit."
+
 gameLoop :: RandomGen g => Handle -> g -> World -> Render -> IO ()
 gameLoop i g w render = go g True i w where
     go g needRender input world = do
@@ -87,4 +92,5 @@ main = do
     hSetEcho stdin False --don't show the typed character
     g <- getStdGen
     let r = if null args then renderAsciiSimple else renderAsciiGrid
+    printHelp
     gameLoop stdin g initial r
